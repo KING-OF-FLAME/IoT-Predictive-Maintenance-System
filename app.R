@@ -18,7 +18,7 @@ ui <- dashboardPage(
   dashboardHeader(title = "IoT Maintenance AI"),
   
   dashboardSidebar(
-    sidebarMenu(
+    sidebarMenu(id="tabs",
       menuItem("Project Overview", tabName = "overview", icon = icon("dashboard")),
       menuItem("Sensor Analytics EDA", tabName = "eda", icon = icon("chart-bar")),
       menuItem("Model Performance", tabName = "performance", icon = icon("cogs")),
@@ -89,6 +89,13 @@ ui <- dashboardPage(
 # Define Server Logic
 server <- function(input, output, session) {
   
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    if (!is.null(query[['tab']])) {
+      updateTabItems(session, "tabs", query[['tab']])
+    }
+  })
+
   # Reactive Data Loading
   raw_data <- reactive({
     if(file.exists("data/raw/predictive_maintenance.csv")){
